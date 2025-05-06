@@ -1,4 +1,3 @@
-
 const axios = require('axios');
 const sendMessage = require('../handles/sendMessage');
 
@@ -18,7 +17,7 @@ module.exports = async (senderId, userText) => {
     try {
         // Créer un ID de session unique basé sur l'ID de l'utilisateur et l'heure
         const sessionId = `${senderId}-${Date.now()}`;
-        
+
         // Envoyer un message d'attente avec animation
         await sendMessage(senderId, "🔍 Recherche en cours...\n⏳ Veuillez patienter quelques instants...");
 
@@ -28,7 +27,7 @@ module.exports = async (senderId, userText) => {
 
         // Récupérer la réponse de l'API
         const reply = response.data.reply;
-        
+
         // Formater la réponse avec une décoration élégante
         const formattedReply = formatReply(reply, prompt);
 
@@ -53,21 +52,23 @@ function formatReply(reply, prompt) {
     const separator = "╔" + "═".repeat(50) + "╗";
     const bottomSeparator = "╚" + "═".repeat(50) + "╝";
     const middleSeparator = "╠" + "═".repeat(50) + "╣";
-    
+
     // Formater la question
     const formattedQuestion = `╠══ 🔍 *QUESTION* :\n╠   ${prompt}\n`;
-    
+
     // Remplacer les balises de formatage mathématique pour un meilleur affichage
-    let formattedReply = reply.replace(/\\\\\\(/g, "*").replace(/\\\\\\)/g, "*");
-    
+    let formattedReply = reply;
+    // Remplacer les balises mathématiques par des astérisques pour mettre en évidence
+    formattedReply = formattedReply.replace(/\\\(|\\\\\(|\\\\\\\(/g, "*").replace(/\\\)|\\\\\)|\\\\\\\)/g, "*");
+
     // Diviser la réponse en sections pour un meilleur formatage
     const sections = formattedReply.split('---');
     let finalReply = "";
-    
+
     if (sections.length > 1) {
         // Si la réponse contient des sections (séparées par ---)
         finalReply = `${separator}\n${formattedQuestion}${middleSeparator}\n╠══ 📝 *RÉPONSE* :\n`;
-        
+
         sections.forEach((section, index) => {
             // Nettoyer et formater chaque section
             const cleanedSection = section.trim()
@@ -75,9 +76,9 @@ function formatReply(reply, prompt) {
                 .split('\n')
                 .map(line => `╠   ${line}`)
                 .join('\n');
-                
+
             finalReply += cleanedSection;
-            
+
             // Ajouter un séparateur entre les sections sauf pour la dernière
             if (index < sections.length - 1) {
                 finalReply += `\n╠   ${'-'.repeat(30)}\n`;
@@ -86,14 +87,14 @@ function formatReply(reply, prompt) {
     } else {
         // Si la réponse ne contient pas de sections
         finalReply = `${separator}\n${formattedQuestion}${middleSeparator}\n╠══ 📝 *RÉPONSE* :\n`;
-        
-        // Formatter la réponse ligne par ligne
+
+        // Formater la réponse ligne par ligne
         const lines = formattedReply.split('\n');
         lines.forEach(line => {
             finalReply += `╠   ${line}\n`;
         });
     }
-    
+
     // Ajouter une signature et la date
     const date = new Date().toLocaleString('fr-FR', { 
         timeZone: 'Europe/Paris',
@@ -103,9 +104,9 @@ function formatReply(reply, prompt) {
         hour: '2-digit',
         minute: '2-digit'
     });
-    
+
     finalReply += `${middleSeparator}\n╠══ 🤖 Généré par R1 Online | ${date}\n${bottomSeparator}`;
-    
+
     return finalReply;
 }
 
