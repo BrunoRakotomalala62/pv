@@ -1,3 +1,4 @@
+
 const axios = require('axios');
 const sendMessage = require('../handles/sendMessage');
 
@@ -48,51 +49,38 @@ module.exports = async (senderId, userText) => {
  * @returns {string} - La réponse formatée
  */
 function formatReply(reply, prompt) {
-    // Créer une bordure décorative
-    const separator = "╔" + "═".repeat(50) + "╗";
-    const bottomSeparator = "╚" + "═".repeat(50) + "╝";
-    const middleSeparator = "╠" + "═".repeat(50) + "╣";
+    // Nettoyer la syntaxe LaTeX
+    let formattedReply = cleanLatexSyntax(reply);
 
-    // Formater la question
-    const formattedQuestion = `╠══ 🔍 *QUESTION* :\n╠   ${prompt}\n`;
-
-    // Remplacer les balises de formatage mathématique pour un meilleur affichage
-    let formattedReply = reply;
-    // Remplacer les balises mathématiques par des astérisques pour mettre en évidence
-    formattedReply = formattedReply.replace(/\\\(|\\\\\(|\\\\\\\(/g, "*").replace(/\\\)|\\\\\)|\\\\\\\)/g, "*");
+    // Créer le début de la réponse
+    let finalReply = `━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    finalReply += `🔍 *QUESTION* :\n${prompt}\n`;
+    finalReply += `━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    finalReply += `📝 *RÉPONSE* :\n`;
 
     // Diviser la réponse en sections pour un meilleur formatage
     const sections = formattedReply.split('---');
-    let finalReply = "";
-
+    
     if (sections.length > 1) {
         // Si la réponse contient des sections (séparées par ---)
-        finalReply = `${separator}\n${formattedQuestion}${middleSeparator}\n╠══ 📝 *RÉPONSE* :\n`;
-
         sections.forEach((section, index) => {
             // Nettoyer et formater chaque section
             const cleanedSection = section.trim()
                 .replace(/###/g, "✨") // Remplacer les ### par des étoiles
                 .split('\n')
-                .map(line => `╠   ${line}`)
                 .join('\n');
 
             finalReply += cleanedSection;
 
             // Ajouter un séparateur entre les sections sauf pour la dernière
             if (index < sections.length - 1) {
-                finalReply += `\n╠   ${'-'.repeat(30)}\n`;
+                finalReply += `\n${'-'.repeat(30)}\n`;
             }
         });
     } else {
         // Si la réponse ne contient pas de sections
-        finalReply = `${separator}\n${formattedQuestion}${middleSeparator}\n╠══ 📝 *RÉPONSE* :\n`;
-
-        // Formater la réponse ligne par ligne
         const lines = formattedReply.split('\n');
-        lines.forEach(line => {
-            finalReply += `╠   ${line}\n`;
-        });
+        finalReply += lines.join('\n');
     }
 
     // Ajouter une signature et la date
@@ -105,9 +93,42 @@ function formatReply(reply, prompt) {
         minute: '2-digit'
     });
 
-    finalReply += `${middleSeparator}\n╠══ 🤖 Généré par R1 Online | ${date}\n${bottomSeparator}`;
+    finalReply += `\n━━━━━━━━━━━━━━━━━━━━━━━━\n🤖 Généré par R1 Online | ${date}`;
 
     return finalReply;
+}
+
+/**
+ * Nettoie la syntaxe LaTeX pour un affichage plus propre
+ * @param {string} text - Le texte à nettoyer
+ * @returns {string} - Le texte nettoyé
+ */
+function cleanLatexSyntax(text) {
+    return text
+        // Supprimer les commandes LaTeX comme \( et \)
+        .replace(/\\\(|\\\\\(|\\\\\\\(/g, "")
+        .replace(/\\\)|\\\\\)|\\\\\\\)/g, "")
+        // Remplacer les fractions
+        .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "$1/$2")
+        // Remplacer les commandes LaTeX comme \implies, \boxed, etc.
+        .replace(/\\implies/g, "=>")
+        .replace(/\\boxed\{([^{}]+)\}/g, "[$1]")
+        .replace(/\\[a-zA-Z]+/g, "")
+        // Remplacer les doubles backslashes
+        .replace(/\\\\/g, "")
+        // Nettoyer les accolades
+        .replace(/\{|\}/g, "")
+        // Remplacer d'autres notations mathématiques
+        .replace(/\\quad/g, " ")
+        .replace(/\\cdot/g, "×")
+        .replace(/\\times/g, "×")
+        .replace(/\\div/g, "÷")
+        // Remplacer les expressions comme \text{...} par leur contenu
+        .replace(/\\text\{([^{}]+)\}/g, "$1")
+        // Nettoyer les expressions avec \equiv et \pmod
+        .replace(/\\equiv[^\\]*\\pmod\{([^{}]+)\}/g, "≡ (mod $1)")
+        // Nettoyer les mathématiques restantes
+        .replace(/\\[a-zA-Z]+\{([^{}]+)\}/g, "$1");
 }
 
 // Ajouter les informations de la commande
