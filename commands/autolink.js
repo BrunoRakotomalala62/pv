@@ -51,6 +51,7 @@ let threadStates = {};
 
 module.exports = async (senderId, userText) => {
     const message = userText.toLowerCase();
+    console.log(`[AutoLink] Nouveau message de ${senderId}: ${userText}`);
     
     // Gestion des commandes autolink on/off
     if (message.includes('autolink off')) {
@@ -70,13 +71,22 @@ module.exports = async (senderId, userText) => {
     }
     
     // Vérification si un lien est présent dans le message
+    console.log(`[AutoLink] Vérification du message pour les liens...`);
     const linkInfo = checkLink(userText);
     if (linkInfo) {
+        console.log(`[AutoLink] Lien détecté: ${linkInfo.url}`);
         // Vérifier si autolink est activé pour ce thread
+        const status = autoLinkStates[senderId] === 'off' ? 'désactivé' : 'activé';
+        console.log(`[AutoLink] État pour ${senderId}: ${status}`);
+        
         if (autoLinkStates[senderId] !== 'off') {
-            await sendMessage(senderId, "🔍 Analyse du lien en cours...");
+            await sendMessage(senderId, `🔍 Analyse du lien en cours...\n${linkInfo.url}`);
             await downLoad(linkInfo.url, senderId);
+        } else {
+            console.log(`[AutoLink] Non activé pour cet utilisateur`);
         }
+    } else {
+        console.log(`[AutoLink] Aucun lien détecté dans le message`);
     }
 };
 
@@ -419,6 +429,8 @@ function checkLink(text) {
             url.includes("instagram") ||
             url.includes("facebook") ||
             url.includes("fb.watch") ||
+            url.includes("fb.gg") ||
+            url.includes("facebook.com/share") ||
             url.includes("tiktok") ||
             url.includes("x.com") ||
             url.includes("twitter.com") ||
@@ -426,6 +438,7 @@ function checkLink(text) {
             url.includes("pinterest") ||
             url.includes("youtu")
         ) {
+            console.log("Lien détecté:", url);
             return { url };
         }
     }
@@ -433,10 +446,13 @@ function checkLink(text) {
     return null;
 }
 
-// Fonction pour extraire les URLs d'un texte
+// Fonction pour extraire les URLs d'un texte - amélioration de la regex
 function extractUrls(text) {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.match(urlRegex) || [];
+    // Regex plus robuste pour détecter différents formats d'URL
+    const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g;
+    const matches = text.match(urlRegex) || [];
+    console.log("URLs extraites:", matches);
+    return matches;
 }
 
 // Fonction pour télécharger des vidéos Facebook
