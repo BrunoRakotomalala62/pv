@@ -1,0 +1,11 @@
+Voici mon api URL 
+https://zaikyoov3-up.up.railway.app/api/r1-online?prompt=r%C3%A9soudre%20l%27%C3%A9quation%20diphontienne%203x-4y=3&session=1
+
+
+
+
+{
+  "author": "@renz",
+  "reply": "Pour résoudre l'équation diophantienne \\\\(3x - 4y = 3\\\\), nous cherchons des solutions entières \\\\((x, y)\\\\). Voici les étapes pour trouver ces solutions :\n\n---\n\n### Étape 1 : Vérifier si une solution existe\nUne équation diophantienne de la forme \\\\(ax + by = c\\\\) a des solutions entières si et seulement si le **PGCD** de \\\\(a\\\\) et \\\\(b\\\\) divise \\\\(c\\\\).\n\nIci, \\\\(a = 3\\\\), \\\\(b = -4\\\\), et \\\\(c = 3\\\\). Le PGCD de \\\\(3\\\\) et \\\\(4\\\\) est \\\\(1\\\\), et \\\\(1\\\\) divise \\\\(3\\\\). Donc, des solutions entières existent.\n\n---\n\n### Étape 2 : Trouver une solution particulière\nNous cherchons une solution particulière \\\\((x_0, y_0)\\\\) de l'équation \\\\(3x - 4y = 3\\\\).\n\nPar essai et erreur, on trouve :\n- Si \\\\(x = 1\\\\), alors \\\\(3(1) - 4y = 3 \\\\Rightarrow -4y = 0 \\\\Rightarrow y = 0\\\\).\n\nAinsi, \\\\((x_0, y_0) = (1, 0)\\\\) est une solution particulière.\n\n---\n\n### Étape 3 : Trouver la solution générale\nLa solution générale d'une équation diophantienne \\\\(ax + by = c\\\\) est donnée par :\n\\\\[\nx = x_0 + \\\\frac{b}{\\\\text{PGCD}(a, b)} \\\\cdot k\n\\\\]\n\\\\[\ny = y_0 - \\\\frac{a}{\\\\text{PGCD}(a, b)} \\\\cdot k\n\\\\]\noù \\\\(k\\\\) est un entier arbitraire.\n\nIci, \\\\(\\\\text{PGCD}(3, 4) = 1\\\\), donc :\n\\\\[\nx = 1 + 4k\n\\\\]\n\\\\[\ny = 0 - 3k\n\\\\]\n\n---\n\n### Solution générale\nLes solutions entières de l'équation \\\\(3x - 4y = 3\\\\) sont :\n\\\\[\nx = 1 + 4k\n\\\\]\n\\\\[\ny = -3k\n\\\\]\noù \\\\(k\\\\) est un entier.\n\n---\n\n### Exemples de solutions\n- Pour \\\\(k = 0\\\\) : \\\\(x = 1\\\\), \\\\(y = 0\\\\).\n- Pour \\\\(k = 1\\\\) : \\\\(x = 5\\\\), \\\\(y = -3\\\\).\n- Pour \\\\(k = -1\\\\) : \\\\(x = -3\\\\), \\\\(y = 3\\\\).\n\n---\n\n### Conclusion\nLa solution générale de l'équation \\\\(3x - 4y = 3\\\\) est :\n\\\\[\n\\\\boxed{x = 1 + 4k, \\\\quad y = -3k \\\\quad \\\\text{où } k \\\\in \\\\mathbb{Z}}\n\\\\]",
+  "session": "1"
+}
