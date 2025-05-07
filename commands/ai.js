@@ -8,6 +8,18 @@ const DATE_API_URL = 'https://date-heure.vercel.app/date?heure=Madagascar';
 // Objet pour stocker le contexte des conversations par utilisateur
 const userConversations = {};
 
+// Fonction pour simplifier les expressions LaTeX
+function simplifyLatex(text) {
+    // Remplacer les expressions LaTeX \[ \] par des espaces
+    text = text.replace(/\\\[(.*?)\\\]/g, '$1');
+    // Remplacer les expressions LaTeX \( \) par des parenthèses simples
+    text = text.replace(/\\\((.*?)\\\)/g, '($1)');
+    // Autres remplacements potentiels pour formater les fractions, etc.
+    text = text.replace(/\\frac{(.*?)}{(.*?)}/g, '$1/$2');
+    
+    return text;
+}
+
 module.exports = async (senderId, userText) => {
     // Vérifier si le message est vide ou ne contient que des espaces
     if (!userText.trim()) {
@@ -38,12 +50,15 @@ module.exports = async (senderId, userText) => {
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         // Formater et envoyer la réponse complète
+        // Simplifier les expressions LaTeX dans la réponse
+        const simplifiedReply = simplifyLatex(reply);
+        
         const formattedReply = `
 🤖 • 𝗕𝗿𝘂𝗻𝗼𝗖𝗵𝗮𝘁
 ━━━━━━━━━━━━━━
 ❓𝗬𝗼𝘂𝗿 𝗤𝘂𝗲𝘀𝘁𝗶𝗼𝗻: ${userText}
 ━━━━━━━━━━━━━━
-✅ 𝗔𝗻𝘀𝘄𝗲𝗿: ${reply}
+✅ 𝗔𝗻𝘀𝘄𝗲𝗿: ${simplifiedReply}
 ━━━━━━━━━━━━━━
 ⏰ 𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲: ${date_actuelle}, ${heure_actuelle} à Madagascar
 
