@@ -40,43 +40,8 @@ const handleMessage = async (event, api) => {
     const senderId = event.sender.id;
     const message = event.message;
 
-    // Vérifier l'abonnement de l'utilisateur
-    const subscription = checkSubscription(senderId);
-
-    // Autoriser uniquement la commande uid sans abonnement
-    const isCommandAllowed = message.text && (
-        message.text.toLowerCase().startsWith('uid')
-    );
-
-    // Si l'utilisateur n'est pas abonné et que ce n'est pas une commande autorisée
-    if (!subscription.isSubscribed && !isCommandAllowed) {
-        await sendMessage(senderId, 
-            "✨ *ACCÈS EXCLUSIF* ✨\n\n" +
-            "🤖 Bonjour! Pour profiter de toutes les fonctionnalités de ce bot intelligent, un abonnement est nécessaire.\n\n" +
-            "💰 *TARIF SPÉCIAL* : Seulement 2000 AR/mois!\n\n" +
-            "💳 *MÉTHODES DE PAIEMENT* :\n" +
-            "• MVola : 0346973333\n" +
-            "• Airtel Money : 0338764195\n" +
-            "• Contact direct : 0346973333\n\n" +
-            "🔍 *COMMENT S'ABONNER* :\n" +
-            "1️⃣ Effectuez votre paiement via MVola ou Airtel Money\n" +
-            "2️⃣ Envoyez la capture d'écran de votre paiement à l'administrateur\n" +
-            "3️⃣ Votre accès sera activé immédiatement!\n\n" +
-            "👨‍💻 *ADMINISTRATEUR* : https://www.facebook.com/bruno.rakotomalala.7549\n\n" +
-            "ℹ️ Tapez 'help' pour découvrir toutes les commandes disponibles!"
-        );
-        return;
-    }
-
-    // Si l'abonnement expire bientôt (moins de 3 jours) et qu'on n'a pas encore envoyé l'alerte
-    if (subscription.isSubscribed && subscription.daysLeft <= 3 && !expirationAlertSent[senderId]) {
-        await sendMessage(senderId, 
-            `⚠️ Attention! Votre abonnement expire dans ${subscription.daysLeft} jour(s).\n` +
-            "Pour renouveler, contactez le 0345788639 (2000 AR/mois)."
-        );
-        // Marquer que l'alerte a été envoyée à cet utilisateur
-        expirationAlertSent[senderId] = true;
-    }
+    // Vérification d'abonnement désactivée - tous les utilisateurs ont accès
+    const subscription = { isSubscribed: true, daysLeft: 9999 };
 
     // Commande "stop" pour désactiver toutes les commandes persistantes
     if (message.text && message.text.toLowerCase() === 'stop') {
